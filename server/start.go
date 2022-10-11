@@ -33,6 +33,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/rosetta"
 	crgserver "github.com/cosmos/cosmos-sdk/server/rosetta/lib/server"
 
+	ethmetrics "github.com/ethereum/go-ethereum/metrics"
+	ethmetricsexp "github.com/ethereum/go-ethereum/metrics/exp"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	pruningtypes "github.com/cosmos/cosmos-sdk/pruning/types"
@@ -338,6 +341,11 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, appCreator ty
 
 		app.RegisterTxService(clientCtx)
 		app.RegisterTendermintService(clientCtx)
+	}
+
+	if config.JSONRPC.EnableMetrics {
+		ethmetrics.Enabled = true
+		ethmetricsexp.Setup(config.JSONRPC.MetricsAddress)
 	}
 
 	var idxer ethermint.EVMTxIndexer
